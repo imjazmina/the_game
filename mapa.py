@@ -5,11 +5,11 @@ class Mapa:
     def __init__(self):
         self.dimension = 5
         self.tablero = [["🔲" for _ in range (self.dimension)] for _ in range (self.dimension)]
-        self.cantidad = self.dimension * 0,15
+        self.cantidad = self.dimension * 0.15
 
 
 
-    def impirmir_tablero(self):
+    def imprimir_tablero(self):
         for fila in self.tablero:
             print (''.join(fila))
 
@@ -55,4 +55,45 @@ class NPC(Pieza):
         self.capturado = False
        
 mapa = Mapa()
-mapa.impirmir_tablero()
+mapa.imprimir_tablero()
+# Creamos el jugador y lo colocamos en el mapa
+jugador = Jugador(0, 0)
+mapa.tablero[jugador.x][jugador.y] = jugador.simbolo
+
+# Creamos un NPC y lo colocamos en el mapa
+npc = NPC(
+    2, 2,
+    "Teju Jagua",
+    "Es un ser mitad lagarto y mitad perro que guarda tesoros.",
+    "Peteĩ mymba teju ha jagua rehegua, ombyaty mba’e reraháva.",
+    (
+        "¿Cuál es el mito con cuerpo de lagarto y cabeza de perro?",
+        ["Pombero", "Teju Jagua", "Luisón"],
+        2  # Opción correcta
+    )
+)
+mapa.tablero[npc.x][npc.y] = npc.simbolo
+
+# Bucle principal del juego
+while True:
+    mapa.imprimir_tablero()
+    direccion = input("Mover (WASD): ").upper()
+    jugador.mover(direccion, mapa)
+
+    if jugador.capturar(npc) and not npc.capturado:
+        print(f"\n📖 Historia de {npc.nombre}")
+        print(f"🇪🇸 {npc.historia_es}")
+        print(f"🇬🇺 {npc.historia_gua}")
+        
+        pregunta, opciones, correcta = npc.trivia
+        print("\n❓", pregunta)
+        for i, opcion in enumerate(opciones, 1):
+            print(f"{i}. {opcion}")
+        
+        respuesta = int(input("Elige la opción correcta (1/2/3): "))
+        if respuesta == correcta:
+            print("✅ ¡Correcto! Pasaste de nivel.")
+            npc.capturado = True
+            break
+        else:
+            print("❌ Incorrecto. Intentá de nuevo.")
